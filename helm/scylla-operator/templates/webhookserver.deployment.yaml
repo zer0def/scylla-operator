@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: scylla-operator
-  name: webhook-server
+  namespace: {{ .Release.Namespace }}
+  name: {{ include "scylla-operator.webhookServiceName" . }}
   labels:
     app.kubernetes.io/name: webhook-server
-    app.kubernetes.io/instance: webhook-server
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: 2
   strategy:
@@ -13,18 +13,18 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: webhook-server
-      app.kubernetes.io/instance: webhook-server
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app.kubernetes.io/name: webhook-server
-        app.kubernetes.io/instance: webhook-server
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: "webhook-server"
+      serviceAccountName: {{ include "scylla-operator.webhookServiceName" . | quote }}
       {{- with .Values.securityContext }}
       securityContext: {{ toYaml . | nindent 8 }}
       {{- end }}

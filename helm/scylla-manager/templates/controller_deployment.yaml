@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scylla-manager-controller
-  namespace: scylla-manager
+  name: {{ include "scylla-manager.controllerName" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "scylla-manager.controllerLabels" . | nindent 4 }}
 spec:
@@ -22,7 +22,7 @@ spec:
       securityContext: {{ toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: scylla-manager-controller
+      - name: {{ include "scylla-manager.controllerName" . }}
         image: {{ .Values.controllerImage.repository }}/scylla-operator:{{ .Values.controllerImage.tag | default .Chart.AppVersion }}
         imagePullPolicy: {{ .Values.controllerImage.pullPolicy }}
         env:

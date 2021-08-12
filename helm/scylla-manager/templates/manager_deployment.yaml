@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scylla-manager
-  namespace: scylla-manager
+  name: {{ include "scylla-manager.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "scylla-manager.labels" . | nindent 4 }}
 spec:
@@ -37,7 +37,7 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
         - mountPath: /mnt/etc/scylla-manager
-          name: scylla-manager-config
+          name: config
         readinessProbe:
           httpGet:
             path: /api/v1/clusters
@@ -46,8 +46,8 @@ spec:
           timeoutSeconds: 3
       volumes:
       - configMap:
-          name: scylla-manager-config
-        name: scylla-manager-config
+          name: {{ print "%s-config" (include "scylla-manager.fullname" .) }}
+        name: config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

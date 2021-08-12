@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: scylla-manager-config
-  namespace: scylla-manager
+  name: {{ print "%s-config" (include "scylla-manager.fullname" .) }}
+  namespace: {{ .Release.Namespace }}
 data:
   scylla-manager.yaml: |-
     http: :5080

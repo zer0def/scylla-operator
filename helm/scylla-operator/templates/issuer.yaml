@@ -2,8 +2,8 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: scylla-operator-selfsigned-issuer
-  namespace: scylla-operator
+  name: {{ printf "%s-selfsigned-issuer" (include "scylla-operator.fullname" .) }}
+  namespace: {{ .Release.Namespace }}
 spec:
   selfSigned: {}
 {{- end }}
