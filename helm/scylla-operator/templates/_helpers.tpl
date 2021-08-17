@@ -80,3 +80,39 @@ Create the name of the webhook cerfiticate secret
 {{- define "scylla-operator.webhookServiceName" -}}
 {{- printf "%s-webhook" ( include "scylla-operator.fullname" .) }}
 {{- end }}
+
+{{/*
+Name of the cluster.
+*/}}
+{{- define "scylla.name" -}}
+{{- .name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Namespace of the cluster.
+*/}}
+{{- define "scylla.namespace" -}}
+{{- .namespace | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Common cluster labels
+*/}}
+{{- define "scylla.labels" -}}
+{{ include "scylla.selectorLabels" . }}
+{{- end }}
+
+{{/*
+Selector cluster labels
+*/}}
+{{- define "scylla.selectorLabels" -}}
+app.kubernetes.io/name: scylla
+app.kubernetes.io/instance: {{ include "scylla.name" . }}
+{{- end }}
+
+{{/*
+Cluster service account to use
+*/}}
+{{- define "scylla.serviceAccountName" -}}
+{{- printf "%s-%s" (include "scylla.name" .) "member" }}
+{{- end }}
