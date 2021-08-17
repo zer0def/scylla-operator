@@ -1,0 +1,112 @@
+{{- range .Values.scyllaClusters }}
+apiVersion: scylla.scylladb.com/v1
+kind: ScyllaCluster
+metadata:
+  name: {{ include "scylla.name" . }}
+  namespace: {{ include "scylla.namespace" . }}
+spec:
+  version: {{ dig "scyllaImage" "tag" "4.4.2" . }}
+  agentVersion: {{ dig "agentImage" "tag" "2.3.0" . }}
+  repository: {{ dig "scyllaImage" "repository" "scylladb/scylla" . }}
+  agentRepository: {{ dig "agentImage" "repository" "scylladb/scylla-manager-agent" . }}
+  {{- if dig "alternator" "enabled" false . }}
+  alternator:
+    port: {{ dig "alternator" "port" 8000 . }}
+    writeIsolation: {{ dig "alternator" "writeIsolation" "always" . }}
+  {{- end }}
+  {{- if dig "developerMode" false . }}
+  developerMode: {{ dig "developerMode" false . }}
+  {{- end }}
+  {{- if dig "cpuset" false . }}
+  cpuset: {{ dig "cpuset" false . }}
+  {{- end }}
+  {{- if dig "automaticOrphanedNodeCleanup" false . }}
+  automaticOrphanedNodeCleanup: {{ dig "automaticOrphanedNodeCleanup" false . }}
+  {{- end }}
+  {{- with (dig "sysctls" (list) .) }}
+  sysctls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if dig "hostNetworking" false . }}
+  network:
+    hostNetworking: {{ dig "hostNetworking" false . }}
+  {{- end }}
+  {{- with (dig "backups" (list) .) }}
+  backups:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with (dig "repairs" (list) .) }}
+  repairs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with (dig "dnsDomains" (list) .) }}
+  dnsDomains:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with (dig "exposeOptions" (list) .) }}
+  exposeOptions:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with (dig "exposeOptions" (list) .) }}
+  exposeOptions:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with (dig "scyllaArgs" "" .) }}
+  scyllaArgs: {{ quote . }}
+  {{- end }}
+  datacenter:
+    name: {{ dig "datacenter" "us-east-1" . }}
+    racks:
+    {{- range (dig "racks" (list) .) }}
+    - name: {{ dig "name" "us-east-1a" . }}
+      {{- with (dig "scyllaConfig" "scylla-config" .) }}
+      scyllaConfig: {{ . }}
+      {{- end }}
+      {{- with (dig "scyllaAgentConfig" "scylla-agent-config" .) }}
+      scyllaAgentConfig: {{ . }}
+      {{- end }}
+      members: {{ (dig "members" 3 .) }}
+      storage:
+        {{- if dig "storage" "storageClassName" "" . }}
+        storageClassName: {{ dig "storage" "storageClassName" "" . }}
+        {{- end }}
+        capacity: {{ dig "storage" "capacity" "10Gi" . }}
+      resources:
+        {{- toYaml (dig "resources" (dict) .) | nindent 8 }}
+      {{- if dig "agentResources" (dict) . }}
+      agentResources:
+        {{- toYaml (dig "agentResources" (dict) .) | nindent 8 }}
+      {{- end }}
+      {{- if dig "volumes" (list) . }}
+      volumes:
+        {{- toYaml (dig "volumes" (list) .) | nindent 8 }}
+      {{- end }}
+      {{- if dig "volumeMounts" (list) . }}
+      volumeMounts:
+        {{- toYaml (dig "volumeMounts" (list) .) | nindent 8 }}
+      {{- end }}
+      {{- if dig "agentVolumeMounts" (list) . }}
+      agentVolumeMounts:
+        {{- toYaml (dig "agentVolumeMounts" (list) .) | nindent 8 }}
+      {{- end }}
+      {{- if dig "placement" (dict) . }}
+      placement:
+        {{- if dig "placement" "podAffinity" (dict) . }}
+        podAffinity:
+          {{- toYaml (dig "placement" "podAffinity" (dict) .) | nindent 10 }}
+        {{- end }}
+        {{- if dig "placement" "podAntiAffinity" (dict) . }}
+        podAntiAffinity:
+          {{- toYaml (dig "placement" "podAntiAffinity" (dict) .) | nindent 10 }}
+        {{- end }}
+        {{- if dig "placement" "nodeAffinity" (dict) . }}
+        nodeAffinity:
+          {{- toYaml (dig "placement" "nodeAffinity" (dict) .) | nindent 10 }}
+        {{- end }}
+        {{- if dig "placement" "tolerations" (list) . }}
+        tolerations:
+          {{- toYaml (dig "placement" "tolerations" (list) .) | nindent 10 }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+{{- end }}

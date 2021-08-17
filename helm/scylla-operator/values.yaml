@@ -81,3 +81,5 @@ webhookServerAffinity:
             app.kubernetes.io/name: webhook-server
             app.kubernetes.io/instance: webhook-server
         topologyKey: kubernetes.io/hostname
+
+scyllaClusters: []
