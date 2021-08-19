@@ -57,31 +57,6 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Create the name of the webhook cerfiticate
-*/}}
-{{- define "scylla-operator.certificateName" -}}
-{{- if .Values.webhook.createSelfSignedCertificate }}
-{{- printf "%s-serving-cert" .Chart.Name }}
-{{- end }}
-{{- end }}
-
-
-{{/*
-Create the name of the webhook cerfiticate secret
-*/}}
-{{- define "scylla-operator.certificateSecretName" -}}
-{{- if .Values.webhook.createSelfSignedCertificate }}
-{{- default "scylla-operator-serving-cert" .Values.webhook.certificateSecretName }}
-{{- else }}
-{{- .Values.webhook.certificateSecretName }}
-{{- end }}
-{{- end }}
-
-{{- define "scylla-operator.webhookServiceName" -}}
-{{- printf "%s-webhook" ( include "scylla-operator.fullname" .) }}
-{{- end }}
-
-{{/*
 Name of the cluster.
 */}}
 {{- define "scylla.name" -}}

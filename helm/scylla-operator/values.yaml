@@ -24,23 +24,7 @@ nodeSelector: { }
 tolerations: [ ]
 
 # Affinity for Scylla Operator pods
-affinity:
-  podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 1
-      podAffinityTerm:
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/name: scylla-operator
-            app.kubernetes.io/instance: scylla-operator
-        topologyKey: kubernetes.io/hostname
-
-webhook:
-  # Specifies whether a self signed certificate should be created using cert-manager
-  createSelfSignedCertificate: true
-  # Name of a secret containing custom certificate
-  # If not set and createSelfSignedCertificate is true, a name is generated using fullname
-  certificateSecretName: ""
+affinity: {}
 
 serviceAccount:
   # Specifies whether a service account should be created
